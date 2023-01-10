@@ -32,13 +32,13 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-    const pathNmae = req.url
+    const pathName = req.url
 
-    if (pathNmae === '/' || pathNmae=== '/overview') {
+    if (pathName === '/' || pathName=== '/overview') {
         res.end('This is the OVERVIEW')
-    } else if (pathNmae === '/product') {
+    } else if (pathName === '/product') {
         res.end('This is the PRODUCT')
-    } else if (pathNmae === '/api') {
+    } else if (pathName === '/api') {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(data);
     } else {
