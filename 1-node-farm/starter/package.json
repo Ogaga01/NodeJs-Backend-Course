@@ -4,7 +4,7 @@
   "description": "Learning Node.Js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/Ogaga01/NodeJs-Backend-Course/issues"
   },
-  "homepage": "https://github.com/Ogaga01/NodeJs-Backend-Course#readme"
+  "homepage": "https://github.com/Ogaga01/NodeJs-Backend-Course#readme",
+  "dependencies": {
+    "slugify": "^1.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
 }
