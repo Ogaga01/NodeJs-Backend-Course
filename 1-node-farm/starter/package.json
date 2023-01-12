@@ -1,0 +1,19 @@
+{
+  "name": "node-farm",
+  "version": "1.0.0",
+  "description": "Learning Node.Js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ogaga01/NodeJs-Backend-Course.git"
+  },
+  "author": "Ogaga Iyara",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ogaga01/NodeJs-Backend-Course/issues"
+  },
+  "homepage": "https://github.com/Ogaga01/NodeJs-Backend-Course#readme"
+}
