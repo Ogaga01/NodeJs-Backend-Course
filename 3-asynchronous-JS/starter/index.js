@@ -1,7 +1,34 @@
 const fs = require("fs");
 const superagent = require("superagent");
 
-fs.readFile(`${__dirname}/dog.txt`, function (err, data) {
+const writeFilePro = (file, data) => {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(file, data, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({
+                    ok: true,
+                    message: "File created!",
+                });
+            }
+        })
+    })
+}
+
+const readFilePro = (file) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, "utf8", (err, data) => {
+      if (err) {
+        reject("I could not find that file");
+      } else {
+        resolve(data);
+      }
+    });
+  });
+};
+
+readFilePro(`${__dirname}/dog.txt`).then((data) => {
   console.log(`Breed: ${data}`);
 
   superagent
