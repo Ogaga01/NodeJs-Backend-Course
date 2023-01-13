@@ -42,10 +42,20 @@ const getDogPic = async () => {
     console.log("Save dog image file");
   } catch (err) {
     console.log(err);
+
+    throw err;
   }
+  return "2 Big Images";
 };
 
-getDogPic();
+(async () => {
+  try {
+    const x = await getDogPic();
+    console.log(x);
+  } catch (err) {
+    console.log(err);
+  }
+})();
 
 // readFilePro(`${__dirname}/dog.txt`).then((data) => {
 //   console.log(`Breed: ${data}`);
