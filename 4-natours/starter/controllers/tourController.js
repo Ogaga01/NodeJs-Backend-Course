@@ -4,36 +4,31 @@ const Tour = require('./../models/tourModel');
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 // );
 
-// exports.checkId = (req, res, next, val) => {
-//     console.log(`The current id is ${val}`);
-//     if (req.params.id * 1 > tours.length) {
-//       return res.status(404).json({
-//         status: 'fail',
-//         message: 'Tour not found',
-//       });
-//     }
-//     next();
-// }
-
-// exports.checkBody = (req, res, next) => {
-//     if (!req.body.name || !req.body.price) {
-//       return res.status(400).json({
-//         status: 'fail',
-//         message: 'Missing name or price',
-//       });
-//     }
-//     next();
-// }
-
 exports.getAllTours = async (req, res) => {
   try {
     //Build Query
+    //1a. Filtering
     const queryObj = { ...req.query }
     const excludedFields = ['page', 'sort', 'limit', 'fields']
     excludedFields.forEach(el => delete queryObj[el])
-    console.log(req.query, queryObj);
 
-    const query = Tour.find(queryObj)
+    //1b. Advanced Filtering
+    let queryStr = JSON.stringify(queryObj)
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
+    
+    let query = Tour.find(JSON.parse(queryStr));
+
+    //2. Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
+
+    //3. Pagination
+
+    console.log(req.query);
     // const query = Tour.find()
     //   .where('duration')
     //   .equals(5)
@@ -94,19 +89,6 @@ exports.updateTour = async (req, res) => {
       message: err,
     });
   }
-  //   if (req.params.id * 1 > tours.length) {
-  //     return res.status(404).json({
-  //       status: 'fail',
-  //       message: 'Tour not found',
-  //     });
-  //   }
-
-  // res.status(200).json({
-  //   status: 'success',
-  //   data: {
-  //     tour: '<Updated tour here...>',
-  //   },
-  // });
 };
 
 exports.deleteTour = async (req, res) => {
