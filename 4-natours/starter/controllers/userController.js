@@ -21,7 +21,7 @@ exports.updateMe = (req, res, next) => {
     return next(new AppError(`Can't update password with this route`, 400))
   }
 
-  //2. Update user document///////////////////////
+  //2. Update user document
 }
 
 exports.createUser = (req, res) => {
