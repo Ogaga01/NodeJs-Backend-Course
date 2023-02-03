@@ -13,16 +13,28 @@ const signToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, res) => {
-    const token = signToken(user._id);
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
 
-    res.status(statusCode).json({
-      status: 'success',
-      token,
-      data: {
-        user
-      },
-    });
-}
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+    res.cookie('jwt', token, cookieOptions);
+    
+    user.password = undefined
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
 
 exports.signUp = catchAsyncError(async (req, res, next) => {
   const newUser = await User.create({
@@ -31,30 +43,30 @@ exports.signUp = catchAsyncError(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
-      role: req.body.role,
+    role: req.body.role,
     active: req.body.active,
   });
-  
-  createSendToken(newUser, 201, res)
+
+  createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsyncError(async (req, res, next) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    //1. Check if email and password exist
-    if (!email || !password) {
-        return next(new AppError('Please provide email and password!', 400));
-    }
-    //2. Check if user exists and if password is correct
-    const user = await User.findOne({ email }).select('+password');
+  //1. Check if email and password exist
+  if (!email || !password) {
+    return next(new AppError('Please provide email and password!', 400));
+  }
+  //2. Check if user exists and if password is correct
+  const user = await User.findOne({ email }).select('+password');
 
-    if (!user || !(await user.correctPassword(password, user.password))) {
-        return next(new AppError('Invalid email or password', 401));
-    }
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError('Invalid email or password', 401));
+  }
 
-    //3. If everything is ok, send token to client
-    createSendToken(user, 200, res);
-})
+  //3. If everything is ok, send token to client
+  createSendToken(user, 200, res);
+});
 
 exports.protect = catchAsyncError(async (req, res, next) => {
   // 1) Getting token and check of it's there
@@ -152,33 +164,35 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsyncError(async (req, res, next) => {
-        //1. Get User Based on token
-        const hashedToken = crypto
-            .createHash('sha256')
-            .update(req.params.token)
-            .digest('hex');
+  //1. Get User Based on token
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
 
-        const user = await User.findOne({
-            passwordResetToken: hashedToken,
-            passwordResetExpires: { $gt: Date.now() },
-        });
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
 
-        //2. If user hasnot expired and thereis token, set the new password
-        if (!user) {
-            return next(new AppError('Invalid or Expired Token. Please try again', 400))
-        }
+  //2. If user hasnot expired and thereis token, set the new password
+  if (!user) {
+    return next(
+      new AppError('Invalid or Expired Token. Please try again', 400)
+    );
+  }
 
-        user.password = req.body.password
-        user.passwordConfirm = req.body.passwordConfirm;
-        user.passwordResetToken = undefined
-        user.passwordResetExpires = undefined
-        await user.save()
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
 
-        //3. Update chanedPasswordAt property for the user
+  //3. Update chanedPasswordAt property for the user
 
-        //4. Log the user back in
-        createSendToken(user, 200, res)
-})
+  //4. Log the user back in
+  createSendToken(user, 200, res);
+});
 
 exports.updatePassword = catchAsyncError(async (req, res, next) => {
   // 1) Get user from collection
@@ -186,7 +200,9 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
 
   // 2) Check if POSTed current password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
-    return next(new AppError('Invalid current password! Please try again.', 401));
+    return next(
+      new AppError('Invalid current password! Please try again.', 401)
+    );
   }
 
   // 3) If so, update password
