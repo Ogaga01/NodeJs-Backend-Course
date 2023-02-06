@@ -1,6 +1,7 @@
 const User = require('./../models/userModel');
 const AppError = require('./../utils/appError');
 const catchAsyncError = require('./../utils/catchAsyncError');
+const factory = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {}
@@ -74,9 +75,11 @@ exports.updateUser = (req, res) => {
   });
 };
 
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'Not implemented yet',
-  });
-};
+exports.deleteUser = factory.deleteOne(User);
+
+// exports.deleteUser = (req, res) => {
+//   res.status(500).json({
+//     status: 'Error',
+//     message: 'Not implemented yet',
+//   });
+// };
