@@ -4,13 +4,14 @@ const catchAsyncError = require('./../utils/catchAsyncError');
 // const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 
-exports.getAllReviews = factory.getAll(Review);
 
 exports.setTourUserIds = (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
   if (!req.body.user) req.body.user = req.user.id;
   next();
 };
+
+exports.getAllReviews = factory.getAll(Review);
 
 exports.createReview = factory.createOne(Review);
 

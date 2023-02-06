@@ -11,7 +11,10 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getAllUsers = factory.getAll(User);
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 
 exports.updateMe = catchAsyncError(async (req, res, next) => {
   //1. Throw error if user tries to update password
@@ -49,6 +52,8 @@ exports.createUser = (req, res) => {
     message: 'Not implemented yet/Please use sign up',
   });
 };
+
+exports.getAllUsers = factory.getAll(User);
 
 exports.getUser = factory.getOne(User);
 
