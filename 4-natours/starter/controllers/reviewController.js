@@ -4,8 +4,12 @@ const catchAsyncError = require('./../utils/catchAsyncError');
 const AppError = require('./../utils/appError');
 
 exports.getAllReviews = catchAsyncError(async (req, res, next) => {
+  let filter = {}
+
+  if (req.params.tourId) filter = {tour: req.params.tourId}
+
   //Execute Query
-  const features = new APIFeatures(Review.find(), req.query)
+  const features = new APIFeatures(Review.find(filter), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -22,20 +26,20 @@ exports.getAllReviews = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.getReview = catchAsyncError(async (req, res, next) => {
-  const review = await Review.findById(req.params.id);
+// exports.getReview = catchAsyncError(async (req, res, next) => {
+//   const review = await Review.findById(req.params.id);
 
-  if (!review) {
-    return next(new AppError('No review found with that ID', 404));
-  }
+//   if (!review) {
+//     return next(new AppError('No review found with that ID', 404));
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      review,
-    },
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       review,
+//     },
+//   });
+// });
 
 exports.createReview = catchAsyncError(async (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
