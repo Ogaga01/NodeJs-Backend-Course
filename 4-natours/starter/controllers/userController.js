@@ -68,12 +68,7 @@ exports.getUser = (req, res) => {
   });
 };
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error',
-    message: 'Not implemented yet',
-  });
-};
+exports.updateUser = factory.updateOne(User)
 
 exports.deleteUser = factory.deleteOne(User);
 
