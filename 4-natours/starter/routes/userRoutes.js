@@ -1,35 +1,37 @@
 const express = require('express');
-
 const userController = require('./../controllers/userController');
 const authController = require('./../controllers/authController');
 
 const router = express.Router();
 
+router.post('/signup', authController.signUp);
+router.post('/login', authController.login);
+router.post('/forgotpassword', authController.forgotPassword);
+router.patch('/resetpassword/:token', authController.resetPassword);
+
+router.use(authController.protect)
+
+router.patch(
+  '/updatemypassword',
+  authController.updatePassword
+);
+
 router.get(
   '/me',
-  authController.protect,
   userController.getMe,
   userController.getUser
 );
 
-router.post('/signup', authController.signUp);
-router.post('/login', authController.login);
+router.patch('/updateme', userController.updateMe);
+router.delete('/deleteme', userController.deleteMe);
 
-router.post('/forgotpassword', authController.forgotPassword);
-router.patch('/resetpassword/:token', authController.resetPassword);
-
-router.patch(
-  '/updatemypassword',
-  authController.protect,
-  authController.updatePassword
-);
-
-router.patch('/updateme', authController.protect, userController.updateMe);
-router.delete('/deleteme', authController.protect, userController.deleteMe);
+router.use(authController.restrictTo('admin'))
 
 router
   .route('/')
-  .get(userController.getAllUsers)
+  .get(
+    userController.getAllUsers
+  )
   .post(userController.createUser);
 
 router
