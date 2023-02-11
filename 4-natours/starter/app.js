@@ -1,3 +1,4 @@
+const path = require ('path')
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -13,7 +14,12 @@ const hpp = require('hpp')
 
 const app = express();
 
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'views'))
+
 // Middleware
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(helmet());
 
 if (process.env.NODE_ENV === 'development') {
@@ -34,7 +40,7 @@ app.use(xss())
 app.use(hpp({
   whitelist: ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price']
 }))
-app.use(express.static(`${__dirname}/public`));
+// app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -51,6 +57,9 @@ app.use((req, res, next) => {
 // app.post('/api/v1/tours', createTour);
 
 // Routes
+app.get('/', (req, res) => {
+  res.status(200).render('base')
+})
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
