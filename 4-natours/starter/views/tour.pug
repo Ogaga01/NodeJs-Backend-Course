@@ -1,4 +1,5 @@
 extends base
+include _reviewCard
 
 mixin overviewBox(label, text, icon)
   .overview-box__detail
@@ -68,8 +69,8 @@ block content
 
         section.section-reviews
             .reviews
-            each review in tour.reviews
-                //- +reviewCard(review)
+                each review in tour.reviews
+                    +reviewCard(review)
 
         section.section-cta
             .cta
