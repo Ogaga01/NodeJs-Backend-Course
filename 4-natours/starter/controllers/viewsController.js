@@ -1,8 +1,13 @@
-exports.getOverview = (req, res) => {
+const Tour = require('./../models/tourModel')
+const catchAsyncError = require('./../utils/catchAsyncError')
+
+exports.getOverview = catchAsyncError(async (req, res, next) => {
+    const tours = await Tour.find()
   res.status(200).render('overview', {
-    title: 'All Tours',
+      title: 'All Tours',
+      tours,
   });
-};
+});
 
 exports.getTour = (req, res) => {
   res.status(200).render('tour', {
