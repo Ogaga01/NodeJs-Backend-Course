@@ -21,7 +21,23 @@ app.set('views', path.join(__dirname, 'views'))
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        'child-src': ['blob:'],
+        'connect-src': ['https://*.mapbox.com'],
+        'default-src': ["'self'"],
+        'font-src': ["'self'", 'https://fonts.gstatic.com'],
+        'img-src': ["'self'", 'data:', 'blob:'],
+        'script-src': ["'self'", 'https://*.mapbox.com'],
+        'style-src': ["'self'", 'https:'],
+        'worker-src': ['blob:'],
+      },
+    },
+  })
+);;
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
