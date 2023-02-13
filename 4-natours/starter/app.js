@@ -12,6 +12,7 @@ const reviewRouter = require('./routes/reviewRoutes')
 const mongoSanitize = require('express-mongo-sanitize')
 const xss = require('xss-clean')
 const hpp = require('hpp')
+const cookieParser = require('cookie-parser')
 
 const app = express();
 
@@ -22,22 +23,38 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
-  helmet({
-    crossOriginEmbedderPolicy: false,
-    contentSecurityPolicy: {
-      directives: {
-        'child-src': ['blob:'],
-        'connect-src': ['https://*.mapbox.com'],
-        'default-src': ["'self'"],
-        'font-src': ["'self'", 'https://fonts.gstatic.com'],
-        'img-src': ["'self'", 'data:', 'blob:'],
-        'script-src': ["'self'", 'https://*.mapbox.com'],
-        'style-src': ["'self'", 'https:'],
-        'worker-src': ['blob:'],
-      },
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'", 'data:', 'blob:'],
+
+      baseUri: ["'self'"],
+
+      fontSrc: ["'self'", 'https:', 'data:'],
+
+      scriptSrc: ["'self'", 'https://*.cloudflare.com'],
+
+      scriptSrc: ["'self'", 'https://*.stripe.com'],
+
+      scriptSrc: ["'self'", 'http:', 'https://*.mapbox.com', 'data:'],
+
+      frameSrc: ["'self'", 'https://*.stripe.com'],
+
+      objectSrc: ["'none'"],
+
+      styleSrc: ["'self'", 'https:', 'unsafe-inline'],
+
+      workerSrc: ["'self'", 'data:', 'blob:'],
+
+      childSrc: ["'self'", 'blob:'],
+
+      imgSrc: ["'self'", 'data:', 'blob:'],
+
+      connectSrc: ["'self'", 'blob:', 'https://*.mapbox.com'],
+
+      upgradeInsecureRequests: [],
     },
   })
-);;
+);
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -52,6 +69,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser())
 app.use(mongoSanitize())
 app.use(xss())
 app.use(hpp({
@@ -61,7 +79,7 @@ app.use(hpp({
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  // console.log(req.headers)
+   console.log(req.cookies)
   next();
 });
 
