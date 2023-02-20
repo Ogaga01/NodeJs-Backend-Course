@@ -43,8 +43,6 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsyncError(async (req, res, next) => {
-  console.log(req.file);
-  console.log(req.body);
   //1. Throw error if user tries to update password
   if (req.body.password || req.body.passwordConfirm) {
     return next(new AppError(`Can't update password with this route`, 400));
@@ -52,6 +50,8 @@ exports.updateMe = catchAsyncError(async (req, res, next) => {
 
   //2. Update user document
   const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.filename
+
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,
